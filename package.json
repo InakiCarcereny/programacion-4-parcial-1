@@ -13,7 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src tests --ext .ts",
     "lint:fix": "eslint src tests --ext .ts --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "husky"
   },
   "keywords": [],
@@ -23,6 +23,8 @@
     "express": "4.21.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "19.6.1",
+    "@commitlint/config-conventional": "19.6.0",
     "@types/express": "4.17.21",
     "@types/node": "22.10.2",
     "@types/supertest": "6.0.2",
@@ -33,12 +35,11 @@
     "eslint-config-prettier": "9.1.0",
     "husky": "9.1.7",
     "lint-staged": "15.2.11",
-    "@commitlint/cli": "19.6.1",
-    "@commitlint/config-conventional": "19.6.0",
     "prettier": "3.4.2",
     "supertest": "7.0.0",
     "tsx": "4.19.2",
     "typescript": "5.7.2",
+    "vite-tsconfig-paths": "6.1.1",
     "vitest": "2.1.8"
   },
   "lint-staged": {
