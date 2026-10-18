@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { AppError, NotFoundError } from "@/errors/AppError";
 
 export function notFoundHandler(req: Request, _res: Response, next: NextFunction): void {
-  next(new NotFoundError(`Ruta ${req.method} ${req.originalUrl} no encontrada`));
+  next(new NotFoundError(`Ruta ${req.method} ${req.originalUrl} not found`));
 }
 
 function isBodyParserError(err: Error): err is Error & { status: number } {
@@ -15,7 +15,7 @@ function isBodyParserError(err: Error): err is Error & { status: number } {
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
   if (isBodyParserError(err)) {
-    res.status(err.status).json({ error: "JSON inválido" });
+    res.status(err.status).json({ error: "invalid JSON" });
     return;
   }
 
@@ -26,5 +26,5 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
 
   console.error(err);
 
-  res.status(500).json({ error: "Error interno del servidor" });
+  res.status(500).json({ error: "Internal server error" });
 }

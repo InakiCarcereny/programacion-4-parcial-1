@@ -48,6 +48,20 @@ describe("E2E API", () => {
     expect(missing.body).toEqual({ error: "Producto Producto-inexistente no encontrado" });
   });
 
+  it("GET /reportes/facturacion responde 0 cuando no hay ventas", async () => {
+    const res = await request(app).get("/reportes/facturacion");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ facturacionTotal: 0 });
+  });
+
+  it("GET /reportes/mas-vendido responde 404 cuando no hay ventas", async () => {
+    const res = await request(app).get("/reportes/mas-vendido");
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: "No hay ventas registradas" });
+  });
+
   it("GET /orders arranca vacío", async () => {
     const res = await request(app).get("/orders");
 
@@ -85,6 +99,20 @@ describe("E2E API", () => {
     expect(list.body[0].id).toBe("Order-1");
   });
 
+  it("GET /reportes/facturacion suma el total de las órdenes creadas", async () => {
+    const res = await request(app).get("/reportes/facturacion");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ facturacionTotal: 5000 });
+  });
+
+  it("GET /reportes/mas-vendido devuelve el producto más vendido", async () => {
+    const res = await request(app).get("/reportes/mas-vendido");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ producto: "Muffin de chocolate", cantidad: 2 });
+  });
+
   it("POST /orders rechaza payloads inválidos con 400/404", async () => {
     const sinItems = await request(app).post("/orders").send({});
     expect(sinItems.status).toBe(400);
@@ -117,13 +145,13 @@ describe("E2E API", () => {
       .send("{ no es json");
 
     expect(res.status).toBe(400);
-    expect(res.body).toEqual({ error: "JSON inválido" });
+    expect(res.body).toEqual({ error: "invalid JSON" });
   });
 
   it("una ruta desconocida responde 404", async () => {
     const res = await request(app).get("/ruta-inexistente");
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toMatch(/no encontrada/);
+    expect(res.body.error).toMatch(/not found/);
   });
 });
