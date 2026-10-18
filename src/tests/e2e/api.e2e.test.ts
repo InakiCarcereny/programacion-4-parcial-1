@@ -1,11 +1,11 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { createApp } from "../../src/app";
+import { createApp } from "@/app";
 
 const app = createApp();
 
 describe("E2E API", () => {
-  it("GET /health responde 200 con estado ok", async () => {
+  it("GET /health returns 200 with status ok", async () => {
     const res = await request(app).get("/health");
 
     expect(res.status).toBe(200);
@@ -14,7 +14,7 @@ describe("E2E API", () => {
     expect(typeof res.body.timestamp).toBe("string");
   });
 
-  it("GET /products devuelve el catálogo completo con el contrato esperado", async () => {
+  it("GET /products returns the full catalog with the expected contract", async () => {
     const res = await request(app).get("/products");
 
     expect(res.status).toBe(200);
@@ -31,7 +31,7 @@ describe("E2E API", () => {
     }
   });
 
-  it("GET /products/:id devuelve un producto existente y 404 si no existe", async () => {
+  it("GET /products/:id returns an existing product and 404 if it doesn't exist", async () => {
     const found = await request(app).get("/products/Pastry-1");
     expect(found.status).toBe(200);
     expect(found.body).toEqual(
@@ -45,31 +45,33 @@ describe("E2E API", () => {
 
     const missing = await request(app).get("/products/Producto-inexistente");
     expect(missing.status).toBe(404);
-    expect(missing.body).toEqual({ error: "Producto Producto-inexistente no encontrado" });
+    expect(missing.body).toEqual({
+      error: "Producto Producto-inexistente no encontrado",
+    });
   });
 
-  it("GET /reportes/facturacion responde 0 cuando no hay ventas", async () => {
-    const res = await request(app).get("/reportes/facturacion");
+  it("GET /reports/revenue returns 0 when there are no sales", async () => {
+    const res = await request(app).get("/reports/revenue");
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ facturacionTotal: 0 });
+    expect(res.body).toEqual({ revenue: 0 });
   });
 
-  it("GET /reportes/mas-vendido responde 404 cuando no hay ventas", async () => {
-    const res = await request(app).get("/reportes/mas-vendido");
+  it("GET /reports/best-selling returns 404 when there are no sales", async () => {
+    const res = await request(app).get("/reports/best-selling");
 
     expect(res.status).toBe(404);
     expect(res.body).toEqual({ error: "No hay ventas registradas" });
   });
 
-  it("GET /orders arranca vacío", async () => {
+  it("GET /orders starts empty", async () => {
     const res = await request(app).get("/orders");
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([]);
   });
 
-  it("POST /orders crea una orden con el contrato esperado", async () => {
+  it("POST /orders creates an order with the expected contract", async () => {
     const res = await request(app)
       .post("/orders")
       .send({ items: [{ productId: "Pastry-1", quantity: 2 }] });
@@ -83,7 +85,7 @@ describe("E2E API", () => {
     });
   });
 
-  it("GET /orders/:id devuelve la orden creada y GET /orders la lista", async () => {
+  it("GET /orders/:id returns the created order and GET /orders lists it", async () => {
     const byId = await request(app).get("/orders/Order-1");
     expect(byId.status).toBe(200);
     expect(byId.body).toEqual({
@@ -99,59 +101,69 @@ describe("E2E API", () => {
     expect(list.body[0].id).toBe("Order-1");
   });
 
-  it("GET /reportes/facturacion suma el total de las órdenes creadas", async () => {
-    const res = await request(app).get("/reportes/facturacion");
+  it("GET /reports/revenue sums the total of the created orders", async () => {
+    const res = await request(app).get("/reports/revenue");
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ facturacionTotal: 5000 });
+    expect(res.body).toEqual({ revenue: 5000 });
   });
 
-  it("GET /reportes/mas-vendido devuelve el producto más vendido", async () => {
-    const res = await request(app).get("/reportes/mas-vendido");
+  it("GET /reports/best-selling returns the best-selling product", async () => {
+    const res = await request(app).get("/reports/best-selling");
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ producto: "Muffin de chocolate", cantidad: 2 });
+    expect(res.body).toEqual({
+      productId: "Pastry-1",
+      name: "Muffin de chocolate",
+      quantity: 2,
+    });
   });
 
-  it("POST /orders rechaza payloads inválidos con 400/404", async () => {
-    const sinItems = await request(app).post("/orders").send({});
-    expect(sinItems.status).toBe(400);
-    expect(sinItems.body).toEqual({ error: "Order must have at least one item" });
+  it("POST /orders rejects invalid payloads with 400/404", async () => {
+    const noItems = await request(app).post("/orders").send({});
+    expect(noItems.status).toBe(400);
+    expect(noItems.body).toEqual({
+      error: "Orden tiene que tener por lo menos un item",
+    });
 
-    const cantidadInvalida = await request(app)
+    const invalidQuantity = await request(app)
       .post("/orders")
       .send({ items: [{ productId: "Pastry-1", quantity: 0 }] });
-    expect(cantidadInvalida.status).toBe(400);
-    expect(cantidadInvalida.body).toEqual({ error: "Invalid quantity for product Pastry-1" });
+    expect(invalidQuantity.status).toBe(400);
+    expect(invalidQuantity.body).toEqual({
+      error: "Cantidad invalida para producto Pastry-1",
+    });
 
-    const productoInexistente = await request(app)
+    const nonExistentProduct = await request(app)
       .post("/orders")
       .send({ items: [{ productId: "Producto-inexistente", quantity: 1 }] });
-    expect(productoInexistente.status).toBe(404);
-    expect(productoInexistente.body).toEqual({ error: "Product Producto-inexistente not found" });
+    expect(nonExistentProduct.status).toBe(404);
+    expect(nonExistentProduct.body).toEqual({
+      error: "Producto Producto-inexistente no encontrado",
+    });
   });
 
-  it("GET /orders/:id inexistente responde 404", async () => {
+  it("GET /orders/:id for a non-existent order returns 404", async () => {
     const res = await request(app).get("/orders/Order-999");
 
     expect(res.status).toBe(404);
-    expect(res.body).toEqual({ error: "Order Order-999 not found" });
+    expect(res.body).toEqual({ error: "Orden Order-999 no encontrada" });
   });
 
-  it("POST /orders con JSON inválido responde 400", async () => {
+  it("POST /orders with invalid JSON returns 400", async () => {
     const res = await request(app)
       .post("/orders")
       .set("Content-Type", "application/json")
       .send("{ no es json");
 
     expect(res.status).toBe(400);
-    expect(res.body).toEqual({ error: "invalid JSON" });
+    expect(res.body).toEqual({ error: "JSON invalido" });
   });
 
-  it("una ruta desconocida responde 404", async () => {
+  it("an unknown route returns 404", async () => {
     const res = await request(app).get("/ruta-inexistente");
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toMatch(/not found/);
+    expect(res.body.error).toMatch(/no encontrada/);
   });
 });
