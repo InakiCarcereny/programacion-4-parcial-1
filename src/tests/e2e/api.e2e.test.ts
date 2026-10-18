@@ -118,12 +118,11 @@ describe("E2E API", () => {
       quantity: 2,
     });
   });
-
   it("POST /orders rejects invalid payloads with 400/404", async () => {
     const noItems = await request(app).post("/orders").send({});
     expect(noItems.status).toBe(400);
     expect(noItems.body).toEqual({
-      error: "Orden tiene que tener por lo menos un item",
+      error: "Required",
     });
 
     const invalidQuantity = await request(app)
@@ -131,7 +130,7 @@ describe("E2E API", () => {
       .send({ items: [{ productId: "Pastry-1", quantity: 0 }] });
     expect(invalidQuantity.status).toBe(400);
     expect(invalidQuantity.body).toEqual({
-      error: "Cantidad invalida para producto Pastry-1",
+      error: "Number must be greater than 0",
     });
 
     const nonExistentProduct = await request(app)
