@@ -6,15 +6,15 @@ import type { OrderItem } from "@/types/order";
 
 function validateItems(items: OrderItem[]): void {
   if (!Array.isArray(items) || items.length === 0) {
-    throw new AppError("Order must have at least one item");
+    throw new AppError("Orden tiene que tener por lo menos un item");
   }
 
   for (const item of items) {
     if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-      throw new AppError(`Invalid quantity for product ${item.productId}`);
+      throw new AppError(`Cantidad invalidad para producto ${item.productId}`);
     }
     if (!products.some((product) => product.id === item.productId)) {
-      throw new NotFoundError(`Product ${item.productId} not found`);
+      throw new NotFoundError(`Producto ${item.productId} no encontrado`);
     }
   }
 }

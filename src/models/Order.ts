@@ -1,5 +1,5 @@
-import type { Order as IOrder, OrderItem, OrderStatus } from "@/types/order";
 import type { Product } from "@/models/Product";
+import type { Order as IOrder, OrderItem, OrderStatus } from "@/types/order";
 
 export class Order {
   constructor(
@@ -12,7 +12,7 @@ export class Order {
     return this.items.reduce((total, item) => {
       const product = products.find((p) => p.id === item.productId);
       if (!product) {
-        throw new Error(`Product ${item.productId} not found`);
+        throw new Error(`Producto ${item.productId} no encontrado`);
       }
       return total + product.calculatePrice() * item.quantity;
     }, 0);

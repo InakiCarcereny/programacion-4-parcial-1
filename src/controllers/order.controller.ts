@@ -21,7 +21,7 @@ export function getOrders(_req: Request, res: Response): void {
 export function getOrderById(req: Request, res: Response, next: NextFunction): void {
   const order = findOrderById(req.params.id);
   if (!order) {
-    return next(new NotFoundError(`Order ${req.params.id} not found`));
+    return next(new NotFoundError(`Orden ${req.params.id} no encontrada`));
   }
 
   res.json(order.toJSON(products));
