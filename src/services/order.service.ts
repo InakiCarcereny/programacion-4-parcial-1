@@ -11,7 +11,7 @@ function validateItems(items: OrderItem[]): void {
 
   for (const item of items) {
     if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-      throw new AppError(`Cantidad invalidad para producto ${item.productId}`);
+      throw new AppError(`Cantidad invalida para producto ${item.productId}`);
     }
     if (!products.some((product) => product.id === item.productId)) {
       throw new NotFoundError(`Producto ${item.productId} no encontrado`);

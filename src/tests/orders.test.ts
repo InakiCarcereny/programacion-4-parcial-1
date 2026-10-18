@@ -18,7 +18,7 @@ describe("POST /orders", () => {
   it("returns 400 for an empty order", async () => {
     const res = await request(app).post("/orders").send({ items: [] });
     expect(res.status).toBe(400);
-    expect(res.body.error).toContain("at least one item");
+    expect(res.body.error).toContain("Orden tiene que tener por lo menos un item");
   });
 
   it("returns 400 for a non-positive quantity", async () => {
@@ -26,7 +26,7 @@ describe("POST /orders", () => {
       .post("/orders")
       .send({ items: [{ productId: "Pastry-1", quantity: 0 }] });
     expect(res.status).toBe(400);
-    expect(res.body.error).toContain("Invalid quantity");
+    expect(res.body.error).toContain("Cantidad invalida para producto Pastry-1");
   });
 
   it("returns 400 for a fractional quantity", async () => {
@@ -41,7 +41,7 @@ describe("POST /orders", () => {
       .post("/orders")
       .send({ items: [{ productId: "does-not-exist", quantity: 1 }] });
     expect(res.status).toBe(404);
-    expect(res.body.error).toContain("not found");
+    expect(res.body.error).toContain("Producto does-not-exist no encontrado");
   });
 });
 
