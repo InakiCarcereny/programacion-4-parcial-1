@@ -13,6 +13,7 @@ Iñaki Carcereny · Valentín De Pascale · Joaquín Marcilese · Ezequiel Barri
 - Vitest + Supertest (tests unitarios + e2e)
 - ESLint + Prettier
 - Husky + commitlint (Conventional Commits)
+- Zod
 
 ## Cómo arrancar
 
