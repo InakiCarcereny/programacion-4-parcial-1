@@ -18,7 +18,7 @@ describe("POST /orders", () => {
   it("returns 400 for an empty order", async () => {
     const res = await request(app).post("/orders").send({ items: [] });
     expect(res.status).toBe(400);
-    expect(res.body.error).toContain("items must contain at least 1 item(s)");
+    expect(res.body.error).toContain("Too small: expected array to have >=1 items");
   });
 
   it("returns 400 for a non-positive quantity", async () => {
@@ -26,7 +26,7 @@ describe("POST /orders", () => {
       .post("/orders")
       .send({ items: [{ productId: "Pastry-1", quantity: 0 }] });
     expect(res.status).toBe(400);
-    expect(res.body.error).toContain("Number must be greater than 0");
+    expect(res.body.error).toContain("Too small: expected number to be >0");
   });
 
   it("returns 400 for a fractional quantity", async () => {
@@ -34,7 +34,7 @@ describe("POST /orders", () => {
       .post("/orders")
       .send({ items: [{ productId: "Pastry-1", quantity: 1.5 }] });
     expect(res.status).toBe(400);
-    expect(res.body.error).toContain("Expected integer, received float");
+    expect(res.body.error).toContain("Invalid input: expected int, received number");
   });
 
   it("returns 404 for a non-existent product", async () => {

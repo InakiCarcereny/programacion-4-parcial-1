@@ -122,7 +122,7 @@ describe("E2E API", () => {
     const noItems = await request(app).post("/orders").send({});
     expect(noItems.status).toBe(400);
     expect(noItems.body).toEqual({
-      error: "Required",
+      error: "Invalid input: expected array, received undefined",
     });
 
     const invalidQuantity = await request(app)
@@ -130,7 +130,7 @@ describe("E2E API", () => {
       .send({ items: [{ productId: "Pastry-1", quantity: 0 }] });
     expect(invalidQuantity.status).toBe(400);
     expect(invalidQuantity.body).toEqual({
-      error: "Number must be greater than 0",
+      error: "Too small: expected number to be >0",
     });
 
     const nonExistentProduct = await request(app)
@@ -141,7 +141,6 @@ describe("E2E API", () => {
       error: "Producto Producto-inexistente no encontrado",
     });
   });
-
   it("GET /orders/:id for a non-existent order returns 404", async () => {
     const res = await request(app).get("/orders/Order-999");
 
